@@ -1,0 +1,21 @@
+---
+title: "p8105_hw6_nh2706"
+author: "Niklas Hess"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Problem 1
+
+SOLUTIONS PROVIDED!
+
+# Problem 2
+
+
+
+
+# Problem 3
