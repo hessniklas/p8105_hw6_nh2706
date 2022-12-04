@@ -32,7 +32,9 @@ SOLUTIONS PROVIDED!
 
 # Problem 2
 
+### Import and cleaning
 
+Importing the data and cleaning it per instructions.
 ```{r}
 raw_homicide_df = read_csv("./data/homicide-data.csv", na = c("","Unknown"))
 
@@ -52,7 +54,9 @@ homicide_df = raw_homicide_df %>%
 knitr::kable(homicide_df)
 ```
 
+### Baltimore Analysis
 
+First, using the glm function to fit a logistic regression with resolved vs unresolved as the outcome and victim age, sex and race as predictors for Baltimore. Saving the output as an object.
 ```{r}
 baltimore_df = homicide_df %>%
   filter(city == "Baltimore") %>%
@@ -60,7 +64,7 @@ baltimore_df = homicide_df %>%
   saveRDS(file = "data/baltimore_glm.rds")
 ```
 
-
+Second, reading the object and showing the adjusted odds ratio (and CI) for solving homicides comparing male victims to female victims.
 ```{r}
 readRDS(file = "data/baltimore_glm.rds") %>%
   broom::tidy(conf.int = TRUE) %>% 
@@ -73,7 +77,9 @@ readRDS(file = "data/baltimore_glm.rds") %>%
   knitr::kable(digits = 3)
 ```
 
+### All city analysis
 
+Runing glm for each of the cities in your dataset, and extract the adjusted odds ratio (and CI) for solving homicides comparing male victims to female victims.
 ```{r}
 city_list = unique(homicide_df$city_state)
 
@@ -91,9 +97,7 @@ city_function = function(y){
 }
 
 final_list = map(city_list, city_function)
-```
 
-```{r}
 df_final = data.frame(city_list[1],final_list[[1]])
 
 names(df_final)[1] = "city_state"
@@ -105,6 +109,8 @@ for (i in 2:47) {
 }
 ```
 
+### Plotting results
+Creating a plot that shows the estimated ORs and CIs for each city. Organizing cities according to estimated OR, and comment on the plot.
 ```{r}
 city_graph = df_final %>%
   mutate(city_state = fct_reorder(city_state, OR)) %>% 
