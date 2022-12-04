@@ -48,8 +48,8 @@ homicide_df = raw_homicide_df %>%
         ) %>%
   mutate(solution = as.numeric(disposition == "Closed by arrest"),
          victim_age = as.numeric(victim_age),
-         victim_race = as.numeric(victim_race == "White"),
-         victim_sex = as.numeric(victim_sex == "Female"))
+         victim_race = as.numeric(victim_race == "White"), #White equals 1 and Black equals 0
+         victim_sex = as.numeric(victim_sex == "Male")) #Female equals 0 and Male equals 1
 ```
 
 ### Baltimore Analysis
@@ -72,7 +72,7 @@ readRDS(file = "data/baltimore_glm.rds") %>%
          conf_high = exp(conf_high)) %>%
   select(term, OR, conf_low, conf_high) %>% 
   filter(term == "victim_sex") %>%
-  knitr::kable(digits = 3)
+  knitr::kable(digits = 2)
 ```
 
 ### All city analysis
@@ -106,11 +106,11 @@ for (i in 2:47) {
   df_final = rbind(df_final, df)
 }
 
-knitr::kable(df_final)
+knitr::kable(df_final, digits = 2)
 ```
 
 ### Plotting results
-Creating a plot that shows the estimated ORs and CIs for each city. Organizing cities according to estimated OR, and comment on the plot.
+Creating a plot that shows the estimated ORs and CIs for each city. Organizing cities according to estimated OR, and comment on the plot. Important to note that Male equals to 1, which means Female is the reference category.
 ```{r}
 city_graph = df_final %>%
   mutate(city_state = fct_reorder(city_state, OR)) %>% 
@@ -125,6 +125,10 @@ city_graph = df_final %>%
 
 city_graph
 ```
+Looking at the graph it becomes clear that the odd of solving a homicide comparing male victims to female victims varies widely. Two examples:
+
+-  In NYC, the odds of solving a homicide for a male in NYC are 0.26 (CI: 0.13, 0.49) times the odds of solvings a homicide for females.
+-   In Albuquerque, the odds of solving a homicide for a male in NYC are 1.77 (CI: 0.82, 3.76) times the odds of solvings a homicide for females. The 95% confidence interval includes 1, so likely not significant.
 
 # Problem 3
 
