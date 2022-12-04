@@ -127,8 +127,8 @@ city_graph
 ```
 Looking at the graph it becomes clear that the odd of solving a homicide comparing male victims to female victims varies widely. Two examples:
 
--  In NYC, the odds of solving a homicide for a male in NYC are 0.26 (CI: 0.13, 0.49) times the odds of solvings a homicide for females.
--   In Albuquerque, the odds of solving a homicide for a male in NYC are 1.77 (CI: 0.82, 3.76) times the odds of solvings a homicide for females. The 95% confidence interval includes 1, so likely not significant.
+-  In NYC, the odds of solving a homicide for a male are 0.26 (CI: 0.13, 0.49) times the odds of solvings a homicide for females.
+-   In Albuquerque, the odds of solving a homicide for a male are 1.77 (CI: 0.82, 3.76) times the odds of solvings a homicide for females. However, the 95% confidence interval includes 1, so likely not significant.
 
 # Problem 3
 
