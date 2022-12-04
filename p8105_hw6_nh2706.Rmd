@@ -33,7 +33,92 @@ SOLUTIONS PROVIDED!
 # Problem 2
 
 
+```{r}
+raw_homicide_df = read_csv("./data/homicide-data.csv", na = c("","Unknown"))
 
+homicide_df = raw_homicide_df %>%
+  mutate(city_state = str_c(city, state, sep = ", ")) %>%
+  filter(city_state != "Dallas, TX",
+         city_state != "Phoenix, AZ",
+         city_state != "Kansas City, MO",
+         city_state != "Tulsa, AL",
+         victim_race %in%  c("Black", "White")
+        ) %>%
+  mutate(solution = as.numeric(disposition == "Closed by arrest"),
+         victim_age = as.numeric(victim_age),
+         victim_race = as.numeric(victim_race == "White"),
+         victim_sex = as.numeric(victim_sex == "Female"))
+
+knitr::kable(homicide_df)
+```
+
+
+```{r}
+baltimore_df = homicide_df %>%
+  filter(city == "Baltimore") %>%
+  glm(solution ~ victim_age + victim_race + victim_sex, data = ., family = binomial()) %>%
+  saveRDS(file = "data/baltimore_glm.rds")
+```
+
+
+```{r}
+readRDS(file = "data/baltimore_glm.rds") %>%
+  broom::tidy(conf.int = TRUE) %>% 
+  janitor::clean_names() %>%
+  mutate(OR = exp(estimate),
+         conf_low = exp(conf_low),
+         conf_high = exp(conf_high)) %>%
+  select(term, OR, conf_low, conf_high) %>% 
+  filter(term == "victim_sex") %>%
+  knitr::kable(digits = 3)
+```
+
+
+```{r}
+city_list = unique(homicide_df$city_state)
+
+city_function = function(y){
+  output = homicide_df %>%
+    filter(city_state == y) %>%
+    glm(solution ~ victim_age + victim_race + victim_sex, data = ., family = binomial()) %>%
+    broom::tidy(conf.int = TRUE) %>% 
+    janitor::clean_names() %>%
+    mutate(OR = exp(estimate),
+         conf_low = exp(conf_low),
+         conf_high = exp(conf_high)) %>%
+    filter(term == "victim_sex") %>%
+    select(term, OR, conf_low, conf_high)
+}
+
+final_list = map(city_list, city_function)
+```
+
+```{r}
+df_final = data.frame(city_list[1],final_list[[1]])
+
+names(df_final)[1] = "city_state"
+
+for (i in 2:47) {
+  df = data.frame(city_list[i],final_list[[i]])
+  names(df)[1] = "city_state"
+  df_final = rbind(df_final, df)
+}
+```
+
+```{r}
+city_graph = df_final %>%
+  mutate(city_state = fct_reorder(city_state, OR)) %>% 
+  ggplot(aes(x = city_state, y = OR)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf_low, ymax = conf_high)) +
+  labs(
+    title = "Estimated ORs and related CIs for each city",
+    x = "City_State",
+    y = "ORs") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+city_graph
+```
 
 # Problem 3
 
@@ -167,5 +252,6 @@ cv_df %>%
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
+The violin graph above shows that model 1 and model 3 have a very similar RMSE score. As such, it would require some further investigation to decide which model is the best. Nevertheless, model 2 has a very high RMSE score and can be excluded.
 
 
