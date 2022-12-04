@@ -50,8 +50,6 @@ homicide_df = raw_homicide_df %>%
          victim_age = as.numeric(victim_age),
          victim_race = as.numeric(victim_race == "White"),
          victim_sex = as.numeric(victim_sex == "Female"))
-
-knitr::kable(homicide_df)
 ```
 
 ### Baltimore Analysis
@@ -107,6 +105,8 @@ for (i in 2:47) {
   names(df)[1] = "city_state"
   df_final = rbind(df_final, df)
 }
+
+knitr::kable(df_final)
 ```
 
 ### Plotting results
@@ -261,3 +261,4 @@ cv_df %>%
 The violin graph above shows that model 1 and model 3 have a very similar RMSE score. As such, it would require some further investigation to decide which model is the best. Nevertheless, model 2 has a very high RMSE score and can be excluded.
 
 
+# END
